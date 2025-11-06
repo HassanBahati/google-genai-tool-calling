@@ -12,5 +12,9 @@
   "devDependencies": {
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@genkit-ai/google-genai": "^1.22.0",
+    "genkit": "^1.22.0"
   }
 }
