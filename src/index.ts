@@ -9,22 +9,6 @@ const ai = genkit({
   }),
 });
 
-const getWeather = ai.defineTool(
-    {
-      name: 'getWeather',
-      description: 'Gets the current weather in a given location',
-      inputSchema: z.object({
-        location: z.string().describe('The location to get the current weather for'),
-      }),
-      outputSchema: z.string(),
-    },
-    async (input) => {
-      // Here, we would typically make an API call or database query. For this
-      // example, we just return a fixed value.
-      return `The current weather in ${input.location} is 63°F and sunny.`;
-    },
-  );
-
 // Define input schema
 const RecipeInputSchema = z.object({
   ingredient: z.string().describe('Main ingredient or cuisine type'),
@@ -57,19 +41,14 @@ export const recipeGeneratorFlow = ai.defineFlow(
       Dietary restrictions: ${input.dietaryRestrictions || 'none'}`;
 
     // Generate structured recipe data using the same schema
-    // const { output } = await ai.generate({
-    //   prompt,
-    //   output: { schema: RecipeSchema },
-    // });
+    const { output } = await ai.generate({
+      prompt,
+      output: { schema: RecipeSchema },
+    });
 
-    const response = await ai.generate({
-        prompt: 'What is the weather in Baltimore?',
-        tools: [getWeather],
-      });
+    if (!output) throw new Error('Failed to generate recipe');
 
-    if (!response) throw new Error('Failed to generate recipe');
-
-    return response;
+    return output;
   },
 );
 
