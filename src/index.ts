@@ -9,6 +9,45 @@ const ai = genkit({
   }),
 });
 
+ai.defineFlow('list-models', async () => {
+  const plugin = googleAI();
+  
+  if (!plugin.list) {
+    throw new Error('Plugin does not have a list method');
+  }
+
+  const listedModels = await plugin.list();
+
+  // Helper function to extract model info
+  const getModelInfo = (model: { name: string }) => {
+    const nameParts = model.name.split('/');
+    const modelId = nameParts[nameParts.length - 1] || '';
+    
+    return {
+      label: modelId,
+      versions: [],
+      supports: {
+        text: true,
+        image: modelId.includes('vision') || modelId.includes('flash'),
+        audio: false,
+      },
+    };
+  };
+
+  return {
+    listedModelsCount: listedModels.length,
+    allListedModels: listedModels.map((m) => {
+      const modelInfo = getModelInfo(m);
+      return {
+        name: m.name,
+        label: modelInfo?.label || 'N/A',
+        versions: modelInfo?.versions || [],
+        supports: modelInfo?.supports || {},
+      };
+    }),
+  };
+});
+
 // Define input schema
 const RecipeInputSchema = z.object({
   ingredient: z.string().describe('Main ingredient or cuisine type'),
