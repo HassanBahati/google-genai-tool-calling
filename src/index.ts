@@ -24,6 +24,23 @@ export const vertexAIExplanationFlow = ai.defineFlow(
   }
 );
 
+
+export const vertexAIExplanationImageFlow = ai.defineFlow(
+  {
+    name: "vertexAIExplanationImageFlow",
+  },
+  async (input) => {
+    const response = await ai.generate({
+      model: vertexAI.model("gemini-3-pro-image-preview"),
+      prompt: input.prompt || "Explain the image in simple terms.",
+    });
+
+    return {
+      text: response.text || "",
+    };
+  }
+);
+
 ai.defineFlow("list-models", async () => {
   const plugin = googleAI();
 
